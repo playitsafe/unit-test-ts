@@ -22,3 +22,18 @@ export function toUpperCaseWithCb(
   callBack(`called function with ${arg}`);
   return arg.toUpperCase();
 }
+
+export class OtherStringUtils {
+  private fnNotAvailableForSpy() {}
+  private callExternalService() {
+    console.log("callExternalService");
+  }
+
+  public toUpperCase(arg: string) {
+    return arg.toUpperCase();
+  }
+
+  public logStr(arg: string) {
+    console.log(arg);
+  }
+}
