@@ -1,3 +1,5 @@
+import { v4 } from "uuid";
+
 type LoggerServiceCallBack = (arg: string) => void;
 export type StringInfo = {
   lowerCase: string;
@@ -36,4 +38,13 @@ export class OtherStringUtils {
   public logStr(arg: string) {
     console.log(arg);
   }
+}
+
+// For mock module
+export function toUpperCase(arg: string) {
+  return arg.toUpperCase();
+}
+
+export function toLowerCaseWithId(arg: string) {
+  return arg.toLowerCase() + v4();
 }
