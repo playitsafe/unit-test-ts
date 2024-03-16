@@ -13,7 +13,17 @@ describe("DB test suite", () => {
 
   const fakeId = "1234";
 
-  const someObj: SomeTypeWithId = { id: "", name: "some name", color: "blue" };
+  const someObj1: SomeTypeWithId = {
+    id: "",
+    name: "some name1",
+    color: "blue",
+  };
+
+  const someObj2: SomeTypeWithId = {
+    id: "",
+    name: "some name2",
+    color: "blue",
+  };
 
   beforeEach(() => {
     sut = new DataBase();
@@ -26,9 +36,22 @@ describe("DB test suite", () => {
   });
 
   it("should get element after insert", async () => {
-    const id = await sut.insert(someObj);
+    const id = await sut.insert(someObj1);
     const actual = await sut.getBy("id", id);
-    console.log(">>>", actual);
-    expect(actual).toBe(someObj);
+    console.log(">>>actual1", actual);
+    expect(actual).toBe(someObj1);
+  });
+
+  it("should find all element w/ same property", async () => {
+    await sut.insert(someObj1);
+    await sut.insert(someObj2);
+
+    const expected = [someObj1, someObj2];
+
+    const actual = await sut.findAllBy("color", "blue");
+    console.log(">>>actual2", actual);
+    console.log(">>>all", await sut.getAllElements());
+
+    expect(actual).toEqual(expected);
   });
 });
