@@ -10,7 +10,10 @@ type SomeTypeWithId = {
 
 describe("DB test suite", () => {
   let sut: DataBase<SomeTypeWithId>;
+
   const fakeId = "1234";
+
+  const someObj: SomeTypeWithId = { id: "", name: "some name", color: "blue" };
 
   beforeEach(() => {
     sut = new DataBase();
@@ -20,5 +23,12 @@ describe("DB test suite", () => {
   it("should return id after insert", async () => {
     const actual = await sut.insert({ id: "" } as any);
     expect(actual).toBe(fakeId);
+  });
+
+  it("should get element after insert", async () => {
+    const id = await sut.insert(someObj);
+    const actual = await sut.getBy("id", id);
+    console.log(">>>", actual);
+    expect(actual).toBe(someObj);
   });
 });
