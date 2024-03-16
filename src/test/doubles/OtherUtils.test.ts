@@ -24,6 +24,9 @@ describe.skip("OtherUtils test suite", () => {
       const consoleLogSpy = jest.spyOn(console, "log");
       sut.logStr("abc");
       expect(consoleLogSpy).toHaveBeenCalledWith("abc");
+
+      // Spy on a class
+      const pushSpy = jest.spyOn(Array.prototype, "push");
     });
 
     test.only("Use a Spy to replace implementation of a method", () => {
