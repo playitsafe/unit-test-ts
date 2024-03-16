@@ -68,12 +68,12 @@ describe("UserCredentialsDataAccess test suite", () => {
     expect(getMock).toHaveBeenCalledWith("id", someId);
   });
 
-  //   it("should get user by name", async () => {
-  //     getMock.mockResolvedValueOnce(someAcc);
+  it("should get user by name", async () => {
+    getMock.mockResolvedValueOnce(someAcc);
 
-  //     const actualUser = await sut.getUserByUserName(someAcc.userName);
+    const actualUser = await sut.getUserByUserName(someAcc.userName);
 
-  //     expect(actualUser).toBe(someAcc);
-  //     expect(insertMock).toHaveBeenCalledWith("userName", someAcc.userName);
-  //   });
+    expect(actualUser).toEqual(someAcc);
+    expect(getMock).toHaveBeenCalledWith("userName", someAcc.userName);
+  });
 });
