@@ -1,5 +1,11 @@
 import { Server } from "../../../app/server_app/server/Server";
 
+// Mock all the custom handlers
+jest.mock("../../../app/server_app/auth/Authorizer");
+jest.mock("../../../app/server_app/handlers/RegisterHandler");
+jest.mock("../../../app/server_app/handlers/LoginHandler");
+jest.mock("../../../app/server_app/handlers/ReservationsHandler");
+
 // Test createServer in http module
 const reqMock = {
   url: "",
@@ -32,5 +38,9 @@ describe("Server test suite", () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  it("should work by now", async () => {
+    sut.startServer();
   });
 });
