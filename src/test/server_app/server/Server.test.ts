@@ -1,6 +1,9 @@
 import { Authorizer } from "../../../app/server_app/auth/Authorizer";
 import { ReservationsDataAccess } from "../../../app/server_app/data/ReservationsDataAccess";
+import { LoginHandler } from "../../../app/server_app/handlers/LoginHandler";
 import { RegisterHandler } from "../../../app/server_app/handlers/RegisterHandler";
+import { ReservationsHandler } from "../../../app/server_app/handlers/ReservationsHandler";
+import { HTTP_CODES } from "../../../app/server_app/model/ServerModel";
 import { Server } from "../../../app/server_app/server/Server";
 
 // Mock all the custom handlers
@@ -58,7 +61,7 @@ describe("Server test suite", () => {
   });
 
   // prototype spy - only works with classes
-  it.skip("should handle register request", async () => {
+  it("should handle register request", async () => {
     reqMock.url = "localhost:8080/register";
     const handleRequestSpy = jest.spyOn(
       RegisterHandler.prototype,
@@ -75,5 +78,54 @@ describe("Server test suite", () => {
       // only check the right type of an arg, not the actual value
       expect.any(Authorizer)
     );
+  });
+
+  it("should handle login request", async () => {
+    reqMock.url = "localhost:8080/login";
+    const handleRequestSpy = jest.spyOn(
+      LoginHandler.prototype,
+      "handleRequest"
+    );
+
+    await sut.startServer();
+
+    expect(handleRequestSpy).toHaveBeenCalledTimes(1);
+    // test the constructor
+    expect(LoginHandler).toHaveBeenCalledWith(
+      reqMock,
+      resMock,
+      // only check the right type of an arg, not the actual value
+      expect.any(Authorizer)
+    );
+  });
+
+  it("should handle reservation request", async () => {
+    reqMock.url = "localhost:8080/reservation";
+    const handleRequestSpy = jest.spyOn(
+      ReservationsHandler.prototype,
+      "handleRequest"
+    );
+
+    await sut.startServer();
+
+    expect(handleRequestSpy).toHaveBeenCalledTimes(1);
+    // test the constructor
+    expect(ReservationsHandler).toHaveBeenCalledWith(
+      reqMock,
+      resMock,
+      // only check the right type of an arg, not the actual value
+      expect.any(Authorizer),
+      expect.any(ReservationsDataAccess)
+    );
+  });
+
+  it("should do nothing on invalid path", async () => {
+    reqMock.url = "localhost:8080/random-route";
+    // we want the spy not to be called
+    const validateTokenSpy = jest.spyOn(Authorizer.prototype, "validateToken");
+
+    await sut.startServer();
+
+    expect(validateTokenSpy).not.toHaveBeenCalled();
   });
 });
