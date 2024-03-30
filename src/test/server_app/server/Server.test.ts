@@ -1,3 +1,5 @@
+import { Authorizer } from "../../../app/server_app/auth/Authorizer";
+import { ReservationsDataAccess } from "../../../app/server_app/data/ReservationsDataAccess";
 import { Server } from "../../../app/server_app/server/Server";
 
 // Mock all the custom handlers
@@ -5,6 +7,7 @@ jest.mock("../../../app/server_app/auth/Authorizer");
 jest.mock("../../../app/server_app/handlers/RegisterHandler");
 jest.mock("../../../app/server_app/handlers/LoginHandler");
 jest.mock("../../../app/server_app/handlers/ReservationsHandler");
+jest.mock("../../../app/server_app/data/ReservationsDataAccess");
 
 // Test createServer in http module
 const reqMock = {
@@ -34,6 +37,9 @@ describe("Server test suite", () => {
 
   beforeEach(() => {
     sut = new Server();
+    // can even check here to see if authorizer is instantiated
+    expect(Authorizer).toHaveBeenCalledTimes(1);
+    expect(ReservationsDataAccess).toHaveBeenCalledTimes(1);
   });
 
   afterEach(() => {
