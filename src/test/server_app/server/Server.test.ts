@@ -128,4 +128,21 @@ describe("Server test suite", () => {
 
     expect(validateTokenSpy).not.toHaveBeenCalled();
   });
+
+  it("should handle error when serving reqs", async () => {
+    reqMock.url = "localhost:8080/reservation";
+    // we expect error
+    const handleRequestSpy = jest.spyOn(
+      ReservationsHandler.prototype,
+      "handleRequest"
+    );
+    handleRequestSpy.mockRejectedValueOnce(new Error("some error"));
+
+    await sut.startServer();
+
+    expect(resMock.writeHead).toHaveBeenCalledWith(
+      HTTP_CODES.INTERNAL_SERVER_ERROR,
+      JSON.stringify("Internal server error: some error")
+    );
+  });
 });
