@@ -129,6 +129,7 @@ describe("Server test suite", () => {
     expect(validateTokenSpy).not.toHaveBeenCalled();
   });
 
+  //add test for invalid request
   it("should handle error when serving reqs", async () => {
     reqMock.url = "localhost:8080/reservation";
     // we expect error
@@ -144,5 +145,13 @@ describe("Server test suite", () => {
       HTTP_CODES.INTERNAL_SERVER_ERROR,
       JSON.stringify("Internal server error: some error")
     );
+  });
+
+  it("should stop the server if started", async () => {
+    await sut.startServer();
+
+    await sut.stopServer();
+
+    expect(serverMock.close).toHaveBeenCalledTimes(1);
   });
 });
