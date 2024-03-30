@@ -1,5 +1,6 @@
 import { Authorizer } from "../../../app/server_app/auth/Authorizer";
 import { ReservationsDataAccess } from "../../../app/server_app/data/ReservationsDataAccess";
+import { RegisterHandler } from "../../../app/server_app/handlers/RegisterHandler";
 import { Server } from "../../../app/server_app/server/Server";
 
 // Mock all the custom handlers
@@ -54,5 +55,25 @@ describe("Server test suite", () => {
     await sut.startServer();
     expect(serverMock.listen).toHaveBeenCalledWith(8080);
     expect(resMock.end).toHaveBeenCalledTimes(1);
+  });
+
+  // prototype spy - only works with classes
+  it.skip("should handle register request", async () => {
+    reqMock.url = "localhost:8080/register";
+    const handleRequestSpy = jest.spyOn(
+      RegisterHandler.prototype,
+      "handleRequest"
+    );
+
+    await sut.startServer();
+
+    expect(handleRequestSpy).toHaveBeenCalledTimes(1);
+    // test the constructor
+    expect(RegisterHandler).toHaveBeenCalledWith(
+      reqMock,
+      resMock,
+      // only check the right type of an arg, not the actual value
+      expect.any(Authorizer)
+    );
   });
 });
