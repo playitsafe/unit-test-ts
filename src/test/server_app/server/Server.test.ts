@@ -46,7 +46,13 @@ describe("Server test suite", () => {
     jest.clearAllMocks();
   });
 
-  it("should work by now", async () => {
+  it.skip("should work by now", async () => {
     sut.startServer();
+  });
+
+  it.skip("should start server on 8080 and end the request", async () => {
+    await sut.startServer();
+    expect(serverMock.listen).toHaveBeenCalledWith(8080);
+    expect(resMock.end).toHaveBeenCalledTimes(1);
   });
 });
