@@ -71,4 +71,20 @@ describe("RegisterReq test suite", () => {
     expect(resWrapper.statusCode).toBe(HTTP_CODES.BAD_REQUEST);
     expect(resWrapper.body).toBe("userName and password required");
   });
+
+  it("should do nothing for not supported method", async () => {
+    reqWrapper.method = HTTP_METHODS.PUT;
+    // provide some valid creds
+    reqWrapper.body = {};
+    reqWrapper.url = "localhost:8080/register";
+    jest.spyOn(DataBase.prototype, "insert").mockResolvedValueOnce("1234");
+
+    // startServer triggers createServer which injects req/res
+    await new Server().startServer();
+
+    await new Promise(process.nextTick); // solve timing issue
+
+    expect(resWrapper.statusCode).toBeUndefined();
+    expect(resWrapper.body).toBeUndefined();
+  });
 });
