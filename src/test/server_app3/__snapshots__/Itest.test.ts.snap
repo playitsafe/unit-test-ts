@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sever app integration test suite snapshot test 1`] = `
+{
+  "endDate": "someEndDate",
+  "id": "12345",
+  "room": "someRoom",
+  "startDate": "someStartDate",
+  "user": "someUser",
+}
+`;
+
+exports[`Sever app integration test suite snapshot test 2`] = `
+{
+  "endDate": "someEndDate",
+  "id": "12345",
+  "room": "someRoom",
+  "startDate": "someStartDate",
+  "user": "someUser",
+}
+`;
