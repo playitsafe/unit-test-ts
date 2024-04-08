@@ -1,4 +1,5 @@
 import { Account } from "../../app/server_app/model/AuthModel";
+import { Reservation } from "../../app/server_app/model/ReservationModel";
 import {
   HTTP_CODES,
   HTTP_METHODS,
@@ -24,6 +25,14 @@ describe("Sever app integration test suite", () => {
     id: "",
     userName: "someUserName",
     password: "somePassword",
+  };
+
+  const someReservation: Reservation = {
+    id: "",
+    endDate: "someEndDate",
+    startDate: "someStartDate",
+    room: "someRoom",
+    user: "someUser",
   };
 
   //   use ndoe fetch
@@ -52,5 +61,35 @@ describe("Sever app integration test suite", () => {
 
     expect(result.statusCode).toBe(HTTP_CODES.CREATED);
     expect(result.body.userId).toBeDefined();
+    console.log(`Env var is ${process.env.HOST}`);
+  });
+
+  let token: string;
+  it("should login a register user", async () => {
+    const result = await fetch("http://localhost:8080/login", {
+      method: HTTP_METHODS.POST,
+      body: JSON.stringify(someUser),
+    });
+    const resultBody = await result.json();
+
+    expect(result.status).toBe(HTTP_CODES.CREATED);
+    expect(resultBody.token).toBeDefined();
+    token = resultBody.token;
+  });
+
+  let createdReservationId: string;
+  it("should create reservation if authorized", async () => {
+    const result = await fetch("http://localhost:8080/reservation", {
+      method: HTTP_METHODS.POST,
+      body: JSON.stringify(someReservation),
+      headers: {
+        authorization: token,
+      },
+    });
+    const resultBody = await result.json();
+
+    expect(result.status).toBe(HTTP_CODES.CREATED);
+    expect(resultBody.reservationId).toBeDefined();
+    createdReservationId = resultBody.reservationId;
   });
 });
