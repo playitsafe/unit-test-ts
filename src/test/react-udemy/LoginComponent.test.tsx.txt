@@ -1,0 +1,156 @@
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import LoginComponent from "./LoginComponent";
+import user from "@testing-library/user-event";
+
+describe("Login Component tests", () => {
+  const LoginServiceMock = {
+    login: jest.fn(),
+  };
+  const setTokenMock = jest.fn();
+
+  let container: HTMLElement;
+
+  function setup() {
+    container = render(
+      <LoginComponent loginService={LoginServiceMock} setToken={setTokenMock} />
+    ).container;
+  }
+
+  beforeEach(() => {
+    setup();
+  });
+  it("should render login component", () => {
+    // console.log(container.innerHTML);
+    const mainElement = screen.getByRole("main");
+    expect(mainElement).toBeInTheDocument();
+    expect(screen.queryByTestId("resultLabel")).not.toBeInTheDocument();
+  });
+
+  it("should render correctly - query by test id", () => {
+    const inputs = screen.queryAllByTestId("input");
+    expect(inputs).toHaveLength(3);
+    // check for empty values
+    expect(inputs[0].getAttribute("value")).toBe("");
+    expect(inputs[1].getAttribute("value")).toBe("");
+    expect(inputs[2].getAttribute("value")).toBe("Login");
+  });
+
+  it("should render correctly - query by document query", () => {
+    // eslint-disable-next-line testing-library/no-node-access
+    const inputs = container.querySelectorAll("input");
+    expect(inputs).toHaveLength(3);
+    expect(inputs[0].value).toBe("");
+    expect(inputs[2].value).toBe("Login");
+  });
+
+  // Mock action
+  it("click login button with empty creds - show required msg", () => {
+    // eslint-disable-next-line testing-library/no-node-access
+    const inputs = container.querySelectorAll("input");
+    const loginButton = inputs[2];
+
+    // By default it's wrapped in `act`
+    fireEvent.click(loginButton);
+
+    const resultLabel = screen.getByTestId("resultLabel");
+    expect(resultLabel).toHaveTextContent("UserName and password required!");
+  });
+
+  it("click login button with empty creds - with user click", () => {
+    // eslint-disable-next-line testing-library/no-node-access
+    const inputs = container.querySelectorAll("input");
+    const loginButton = inputs[2];
+
+    act(() => {
+      (() => {
+        user.click(loginButton);
+      })();
+    });
+
+    const resultLabel = screen.getByTestId("resultLabel");
+    expect(resultLabel).toHaveTextContent("UserName and password required!");
+  });
+
+  // test async
+  it("should successfully login", async () => {
+    LoginServiceMock.login.mockResolvedValueOnce("1234");
+    // eslint-disable-next-line testing-library/no-node-access
+    const inputs = container.querySelectorAll("input");
+    const userNameInput = inputs[0];
+    const pwInput = inputs[1];
+    const loginBtn = inputs[2];
+
+    fireEvent.change(userNameInput, { target: { value: "someUser" } });
+    fireEvent.change(pwInput, { target: { value: "somePassword" } });
+    fireEvent.click(loginBtn);
+    // `findByTestId` is async
+    const resultLabel = await screen.findByTestId("resultLabel");
+
+    expect(resultLabel).toHaveTextContent("successful login");
+  });
+
+  // another approach
+  it("should successfully login - user calls", async () => {
+    LoginServiceMock.login.mockResolvedValueOnce("1234");
+    // eslint-disable-next-line testing-library/no-node-access
+    const inputs = container.querySelectorAll("input");
+    const userNameInput = inputs[0];
+    const pwInput = inputs[1];
+    const loginBtn = inputs[2];
+
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    act(() => {
+      user.click(userNameInput);
+      user.keyboard("someUser");
+
+      user.click(pwInput);
+      user.keyboard("somePassword");
+
+      user.click(loginBtn);
+    });
+
+    expect(LoginServiceMock.login).toHaveBeenCalledTimes(1);
+    expect(LoginServiceMock.login).toHaveBeenCalledWith(
+      "someUser",
+      "somePassword"
+    );
+    // `findByTestId` is async
+    const resultLabel = await screen.findByTestId("resultLabel");
+
+    expect(resultLabel).toHaveTextContent("successful login");
+  });
+
+  it("right creds but unsuccessful login", async () => {
+    const res = Promise.resolve(undefined);
+    LoginServiceMock.login.mockResolvedValueOnce(res);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    const inputs = container.querySelectorAll("input");
+    const userNameInput = inputs[0];
+    const pwInput = inputs[1];
+    const loginBtn = inputs[2];
+
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    act(() => {
+      user.click(userNameInput);
+      user.keyboard("someUser");
+
+      user.click(pwInput);
+      user.keyboard("somePassword");
+
+      user.click(loginBtn);
+    });
+
+    await res;
+
+    expect(LoginServiceMock.login).toHaveBeenCalledTimes(1);
+    expect(LoginServiceMock.login).toHaveBeenCalledWith(
+      "someUser",
+      "somePassword"
+    );
+    // `findByTestId` is async
+    const resultLabel = await screen.findByTestId("resultLabel");
+
+    expect(resultLabel).toHaveTextContent("invalid credentials");
+  });
+});
